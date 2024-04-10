@@ -32,8 +32,7 @@ async function getAndProcessOffers(
 ) {
   try {
     const datos = await getOffers(data, type, coin, min, max);
-    console.log("Ofertas obtenidas:", datos);
-
+    
     let filteredOffers = datos.data
       .filter(
         (offer) =>
