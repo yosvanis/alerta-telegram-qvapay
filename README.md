@@ -10,6 +10,7 @@ Alerta Telegram Qvapay es un bot de Telegram diseñado para notificar a los usua
 - Definición de parámetros para consultas de ofertas.
 - Notificaciones en tiempo real sobre ofertas que cumplen con los criterios definidos.
 - Filtrado y ordenamiento de ofertas por fecha y ratio.
+- **Modo Automático**: Permite a los usuarios configurar el bot para que realice consultas automáticamente en intervalos definidos.
 
 ## Requisitos
 
@@ -55,6 +56,7 @@ Alerta Telegram Qvapay es un bot de Telegram diseñado para notificar a los usua
 1. Inicia el bot y sigue las instrucciones para autenticarte en la plataforma Qvapay.
 2. Define los parámetros para las consultas de ofertas utilizando los comandos proporcionados por el bot.
 3. Recibe notificaciones en tiempo real sobre las ofertas que cumplen con tus criterios.
+4. **Modo Automático**: Utiliza los comandos `/Modo Automático ON` y `/Modo Automático OFF` para activar o desactivar el modo automático.
 
 ## Comandos
 
@@ -64,6 +66,12 @@ Alerta Telegram Qvapay es un bot de Telegram diseñado para notificar a los usua
 - `/Ofertas_buy_CUP min max ratio orden`: Consulta ofertas de compra de CUP.
 - `/Ofertas_sell_MLC min max ratio orden`: Consulta ofertas de venta de MLC.
 - `/Ofertas_buy_MLC min max ratio orden`: Consulta ofertas de compra de MLC.
+- `/Modo Automático ON`: Activa el modo automático para realizar consultas automáticamente.
+- `/Modo Automático OFF`: Desactiva el modo automático.
+
+## Despliegue en Render
+
+Para desplegar este proyecto en Render, sigue los pasos detallados en la sección de [Despliegue](#despliegue).
 
 ## Contribuciones
 
@@ -72,3 +80,8 @@ Las contribuciones son bienvenidas. Por favor, abre un issue o un pull request p
 ## Licencia
 
 Este proyecto está licenciado bajo la licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+
+```
+
+Este es solo un ejemplo. Asegúrate de ajustar el contenido para que refleje con precisión los cambios y características específicas de tu proyecto.
+```
