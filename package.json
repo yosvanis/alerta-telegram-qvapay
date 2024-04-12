@@ -3,9 +3,10 @@
  "version": "1.0.0",
  "description": "Alerta Telegram Ofertas QvaPay",
  "main": "bot.js",
- "scripts": {
-    "start": "node bot.js"
- },
+"scripts": {
+ "start": "node bot.js",
+ "build": "echo 'No build step'"
+},
  "author": "",
  "license": "ISC",
  "dependencies": {
