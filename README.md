@@ -43,6 +43,8 @@ Alerta Telegram Qvapay es un bot de Telegram diseñado para notificar a los usua
    ```
    TELEGRAM_BOT_TOKEN=tu_token_de_bot
    TELEGRAM_CHANNEL_ID=tu_id_de_canal
+   TELEGRAM_USUARIO='tu_usuario_QVAPAY'
+   TELEGRAM_PASSWORD='tu_password_QVAPAY'
    ```
 
 5. Ejecuta el bot:
@@ -61,7 +63,7 @@ Alerta Telegram Qvapay es un bot de Telegram diseñado para notificar a los usua
 ## Comandos
 
 - `/start`: Inicia el bot y muestra el mensaje de bienvenida.
-- `/login tu_Usuario tu_Contraseña`: Autentica al usuario en la plataforma Qvapay.
+- `/login`: Autentica al usuario en la plataforma Qvapay.
 - `/Ofertas_sell_CUP min max ratio orden`: Consulta ofertas de venta de CUP.
 - `/Ofertas_buy_CUP min max ratio orden`: Consulta ofertas de compra de CUP.
 - `/Ofertas_sell_MLC min max ratio orden`: Consulta ofertas de venta de MLC.
