@@ -60,107 +60,7 @@ bot.onText(/\/login/, async (msg) => {
   }
 });
 
-
-
-let automaticMode = false;
-let automaticModeParams = {};
-
-bot.on("message", (msg) => {
-  const chatId = msg.chat.id;
-  const text = msg.text;
-
-  // Manejar la acción del botón "Reset parámetros"
- if (text === "Reset parámetros") {
-    // Limpiar los parámetros automáticos para el chatId del usuario
-    automaticModeParams[chatId] = {};
-    telegramService.sendMessage(chatId, "Parámetros reseteados. Ahora puedes introducirlos nuevamente.");
-    return; // Salir de la función para evitar procesar el mensaje como un comando
- }
-
-  if (text.startsWith("/Ofertas_")) {
-    // Procesar los parámetros enviados por el usuario
-
-    const params = text.split(" ");
-    const command = params[0];
-    const min = parseFloat(params[1]);
-    const max = parseFloat(params[2]);
-    const ratio = parseFloat(params[3]);
-    const orden = params[4];
-    // Almacenar los parámetros en automaticModeParams
-    if (!automaticModeParams[chatId]) {
-      automaticModeParams[chatId] = {};
-    }
-    automaticModeParams[chatId][command] = { min, max, ratio, orden };
-
-    // Verificar si todos los comandos han sido enviados
-    if (Object.keys(automaticModeParams[chatId]).length === 4) {
-      telegramService.sendMessage(
-        chatId,
-        "Todos los parámetros han sido enviados. Modo Automático está listo para activarse."
-      );
-    }
-  }
-
-  if (text === "Modo Automático ON" && automaticModeParams[chatId]) {
-    automaticMode = true;
-    telegramService.sendMessage(
-      chatId,
-      "Modo Automático está activo. Comenzando a hacer peticiones automáticas cada minuto."
-    );
-
-    // Iniciar el intervalo para hacer peticiones automáticas
-    setInterval(async () => {
-      const data = sessionData.get(chatId);
-      if (automaticMode && automaticModeParams[chatId]) {
-        for (const command in automaticModeParams[chatId]) {
-          const params = automaticModeParams[chatId][command];
-          const commands = {
-            [command]: params,
-          };
-          console.log(commands);
-
-          offerService.getAndProcessOffersAutomatic(
-            data,
-            commands,
-            chatId,
-            channelId
-          );
-        }
-      }
-    }, 1 * 60 * 1000); // 1 minuto en milisegundos
-  } else if (text === "Modo Automático OFF") {
-    automaticMode = false;
-    telegramService.sendMessage(
-      chatId,
-      "Modo Automático OFF. Las peticiones automáticas han sido detenidas."
-    );
-  } else if (text === "Enviar Manualmente parámetros") {
-    const data = sessionData.get(chatId);
-    
-    if (!automaticMode && automaticModeParams[chatId]) {
-      for (const command in automaticModeParams[chatId]) {
-        const params = automaticModeParams[chatId][command];
-        const commands = {
-          [command]: params,
-        };
-        offerService.getAndProcessOffersAutomatic(
-          data,
-          commands,
-          chatId,
-          channelId
-        );
-      }
-      telegramService.sendMessage(chatId, "Parámetros enviados manualmente.");
-    } else {
-      telegramService.sendMessage(
-        chatId,
-        "Modo Automático está activo, no puede realizar peticiones manuales."
-      );
-    }
-  }
-  else
-  {
-    bot.onText(/\/Ofertas_sell_CUP (.+)/, async (msg, match) => {
+/* bot.onText(/\/Ofertas_sell_CUP (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const argsOf = match[1].split(" ");
   const [min_sell_CUP, max_sell_CUP, ratio_sell_CUP, orden_sell_CUP] = argsOf;
@@ -264,7 +164,103 @@ bot.onText(/\/Ofertas_buy_MLC (.+)/, async (msg, match) => {
     chatId,
     channelId
   );
-});
+}); */
+
+let automaticMode = false;
+let automaticModeParams = {};
+
+bot.on("message", (msg) => {
+  const chatId = msg.chat.id;
+  const text = msg.text;
+
+  // Manejar la acción del botón "Reset parámetros"
+ if (text === "Reset parámetros") {
+    // Limpiar los parámetros automáticos para el chatId del usuario
+    automaticModeParams[chatId] = {};
+    telegramService.sendMessage(chatId, "Parámetros reseteados. Ahora puedes introducirlos nuevamente.");
+    return; // Salir de la función para evitar procesar el mensaje como un comando
+ }
+
+  if (text.startsWith("/Ofertas_")) {
+    // Procesar los parámetros enviados por el usuario
+
+    const params = text.split(" ");
+    const command = params[0];
+    const min = parseFloat(params[1]);
+    const max = parseFloat(params[2]);
+    const ratio = parseFloat(params[3]);
+    const orden = params[4];
+    // Almacenar los parámetros en automaticModeParams
+    if (!automaticModeParams[chatId]) {
+      automaticModeParams[chatId] = {};
+    }
+    automaticModeParams[chatId][command] = { min, max, ratio, orden };
+
+    // Verificar si todos los comandos han sido enviados
+    if (Object.keys(automaticModeParams[chatId]).length === 4) {
+      telegramService.sendMessage(
+        chatId,
+        "Todos los parámetros han sido enviados. Modo Automático está listo para activarse."
+      );
+    }
+  }
+
+  if (text === "Modo Automático ON" && automaticModeParams[chatId]) {
+    automaticMode = true;
+    telegramService.sendMessage(
+      chatId,
+      "Modo Automático está activo. Comenzando a hacer peticiones automáticas cada minuto."
+    );
+
+    // Iniciar el intervalo para hacer peticiones automáticas
+    setInterval(async () => {
+      const data = sessionData.get(chatId);
+      if (automaticMode && automaticModeParams[chatId]) {
+        for (const command in automaticModeParams[chatId]) {
+          const params = automaticModeParams[chatId][command];
+          const commands = {
+            [command]: params,
+          };
+          console.log(commands);
+
+          offerService.getAndProcessOffersAutomatic(
+            data,
+            commands,
+            chatId,
+            channelId
+          );
+        }
+      }
+    }, 1 * 60 * 1000); // 1 minuto en milisegundos
+  } else if (text === "Modo Automático OFF") {
+    automaticMode = false;
+    telegramService.sendMessage(
+      chatId,
+      "Modo Automático OFF. Las peticiones automáticas han sido detenidas."
+    );
+  } else if (text === "Enviar Manualmente parámetros") {
+    const data = sessionData.get(chatId);
+    
+    if (!automaticMode && automaticModeParams[chatId]) {
+      for (const command in automaticModeParams[chatId]) {
+        const params = automaticModeParams[chatId][command];
+        const commands = {
+          [command]: params,
+        };
+        offerService.getAndProcessOffersAutomatic(
+          data,
+          commands,
+          chatId,
+          channelId
+        );
+      }
+      telegramService.sendMessage(chatId, "Parámetros enviados manualmente.");
+    } else {
+      telegramService.sendMessage(
+        chatId,
+        "Modo Automático está activo, no puede realizar peticiones manuales."
+      );
+    }
   }
 
   
