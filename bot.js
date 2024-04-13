@@ -2,7 +2,7 @@
 
 const TelegramBot = require("node-telegram-bot-api");
 const authService = require("./authService");
-const telegramService = require("./telegramService");
+//const telegramService = require("./telegramService");
 const offerService = require("./offerService");
 require("dotenv").config();
 
@@ -47,13 +47,13 @@ bot.onText(/\/login/, async (msg) => {
     // Almacenar los datos de la sesión
     sessionData.set(chatId, data);
     // Mostrar el mensaje después del inicio de sesión exitoso
-    telegramService.sendMessage(
+    sendMessage(
       chatId,
       "Definir los parámetros iniciales para las consultas, Comandos:\n /Ofertas_sell_CUP min max ratio orden\n /Ofertas_buy_CUP min max ratio orden\n /Ofertas_sell_MLC min max ratio orden\n /Ofertas_buy_MLC min max ratio orden\n"
     );
   } catch (error) {
     console.error(error);
-    telegramService.sendMessage(
+    sendMessage(
       chatId,
       "Hubo un error al establecer usuario y contraseña."
     );
@@ -177,7 +177,7 @@ bot.on("message", (msg) => {
  if (text === "Reset parámetros") {
     // Limpiar los parámetros automáticos para el chatId del usuario
     automaticModeParams[chatId] = {};
-    telegramService.sendMessage(chatId, "Parámetros reseteados. Ahora puedes introducirlos nuevamente.");
+    sendMessage(chatId, "Parámetros reseteados. Ahora puedes introducirlos nuevamente.");
     return; // Salir de la función para evitar procesar el mensaje como un comando
  }
 
@@ -198,7 +198,7 @@ bot.on("message", (msg) => {
 
     // Verificar si todos los comandos han sido enviados
     if (Object.keys(automaticModeParams[chatId]).length === 4) {
-      telegramService.sendMessage(
+      sendMessage(
         chatId,
         "Todos los parámetros han sido enviados. Modo Automático está listo para activarse."
       );
@@ -207,7 +207,7 @@ bot.on("message", (msg) => {
 
   if (text === "Modo Automático ON" && automaticModeParams[chatId]) {
     automaticMode = true;
-    telegramService.sendMessage(
+    sendMessage(
       chatId,
       "Modo Automático está activo. Comenzando a hacer peticiones automáticas cada minuto."
     );
@@ -234,7 +234,7 @@ bot.on("message", (msg) => {
     }, 1 * 60 * 1000); // 1 minuto en milisegundos
   } else if (text === "Modo Automático OFF") {
     automaticMode = false;
-    telegramService.sendMessage(
+    sendMessage(
       chatId,
       "Modo Automático OFF. Las peticiones automáticas han sido detenidas."
     );
@@ -254,9 +254,9 @@ bot.on("message", (msg) => {
           channelId
         );
       }
-      telegramService.sendMessage(chatId, "Parámetros enviados manualmente.");
+      sendMessage(chatId, "Parámetros enviados manualmente.");
     } else {
-      telegramService.sendMessage(
+      sendMessage(
         chatId,
         "Modo Automático está activo, no puede realizar peticiones manuales."
       );
@@ -266,4 +266,60 @@ bot.on("message", (msg) => {
   
 });
 
-module.exports = bot;
+
+///////////////////////////////////////////////////////////////////////
+//Módulo que maneja la interacción con Telegram, como enviar mensajes.
+
+function sendMessage(chatId, text) {
+  bot.sendMessage(chatId, text);
+}
+
+async function sendArrayToTelegram(chatId, array, ordenadoPor) {
+  let message = "";
+  array.forEach((offer, index) => {
+    let tipo = offer.type === "buy" ? " de compra " : " de venta ";
+
+    if (index == 0) {
+      message +=
+        offer.type === "buy"
+          ? `En estas ofertas Recibes  ${offer.coin} y Pagas USD,`
+          : `En estas ofertas Recibes USD y Pagas ${offer.coin}\n\n`;
+      message += `\n>>> ${ordenadoPor} <<<\n`;
+    }
+
+    message += `\n--- Oferta ${tipo} # ${index + 1} ---\n`;
+    message += `Fecha: ${new Date(offer.ultimaFecha).toLocaleDateString(
+      "es-ES",
+      {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    )}, `;
+    message +=
+      offer.type === "buy"
+        ? `Recibes: ${parseFloat(offer.receive).toFixed(2)} ${
+            offer.coin
+          }, Pagas: ${offer.amount} USD,`
+        : `Recibes: ${offer.amount} USD , Pagas: ${parseFloat(
+            offer.receive
+          ).toFixed(2)} ${offer.coin} ,`;
+    message += ` Ratio: ${offer.Ratio}\n`;
+  });
+
+  try {
+    await bot.sendMessage(chatId, message);
+    console.log("Mensaje enviado exitosamente.");
+  } catch (error) {
+    console.error("Error al enviar el mensaje:", error);
+  }
+}
+
+//module.exports = { sendMessage, sendArrayToTelegram };
+
+
+////////////////////////////////////////////////////////////////////////
+
+module.exports = { bot, sendMessage, sendArrayToTelegram };

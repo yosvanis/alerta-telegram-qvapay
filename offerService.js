@@ -1,7 +1,9 @@
 //  Lógica para obtener y procesar las ofertas.
 
-const telegramService = require("./telegramService"); // Asegúrate de que telegramService esté disponible
+//const telegramService = require("./telegramService"); // Asegúrate de que telegramService esté disponible
+//const bot = require("./bot")
 const axios = require("axios");
+const botF = require("./bot");
 async function getOffers(response, type, coin, min, max) {
   const url = `https://qvapay.com/api/p2p/index?type=${type}&coin=${coin}&min=${min}&max=${max}`;
   const accessToken = response.accessToken;
@@ -18,6 +20,8 @@ async function getOffers(response, type, coin, min, max) {
     throw error;
   }
 }
+
+
 
 async function getAndProcessOffers(
   data,
@@ -67,20 +71,20 @@ async function getAndProcessOffers(
 
     console.log(mensaje, filteredOffers);
     if (filteredOffers.length != 0) {
-      telegramService.sendArrayToTelegram(
+      botF.sendArrayToTelegram(
         `${channelId}`,
         filteredOffers,
         mensaje
       );
     } else {
-      telegramService.sendMessage(
+      botF.sendMessage(
         `${channelId}`,
         "No hay ofertas para esos datos"
       );
     }
   } catch (error) {
     console.error("Error al obtener las ofertas:", error);
-    telegramService.sendMessage(
+    botF.sendMessage(
       chatId,
       "Hubo un error al obtener las ofertas."
     );
@@ -141,7 +145,7 @@ async function getAndProcessOffersAutomatic(data, commands, chatId, channelId) {
 
         if (previousOffersString !== currentOffersString) {
           previousOffers[command] = filteredOffers;
-          telegramService.sendArrayToTelegram(
+          botF.sendArrayToTelegram(
             `${channelId}`,
             filteredOffers,
             mensaje
@@ -151,12 +155,13 @@ async function getAndProcessOffersAutomatic(data, commands, chatId, channelId) {
     }
  } catch (error) {
     console.error("Error al obtener las ofertas:", error);
-    telegramService.sendMessage(
+    botF.sendMessage(
       chatId,
       "Hubo un error al obtener las ofertas."
     );
  }
 }
+
 
 module.exports = {
   getAndProcessOffers,
