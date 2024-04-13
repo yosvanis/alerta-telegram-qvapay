@@ -1,8 +1,8 @@
 //Módulo que maneja la interacción con Telegram, como enviar mensajes.
 
 const TelegramBot = require("node-telegram-bot-api");
-const token = "7000635968:AAGj_vRejCOqikhbtZYwC-pfbCiW5Ci_2Wg";
-const bot = new TelegramBot(token, { polling: false });
+//const token = "7000635968:AAGj_vRejCOqikhbtZYwC-pfbCiW5Ci_2Wg";
+//const bot = new TelegramBot(token, { polling: false });
 
 function sendMessage(chatId, text) {
   bot.sendMessage(chatId, text);
