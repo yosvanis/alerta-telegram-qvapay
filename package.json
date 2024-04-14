@@ -5,7 +5,7 @@
  "main": "bot.js",
 "scripts": {
  "start": "node bot.js",
- "build": "npm install"
+ "build": "echo 'No build step'"
 },
  "author": "",
  "license": "ISC",
