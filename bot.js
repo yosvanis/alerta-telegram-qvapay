@@ -7,7 +7,7 @@ const token = process.env.TELEGRAM_BOT_TOKEN;
 const channelId = process.env.TELEGRAM_CHANNEL_ID;
 const username = process.env.TELEGRAM_USUARIO;
 const password = process.env.TELEGRAM_PASSWORD;
-const intervalo = proces.env.TELEGRAM_INTERVALO;
+const intervalo = process.env.TELEGRAM_INTERVALO;
 const sessionData = new Map();
 const bot = new TelegramBot(token, { polling: true });
 
