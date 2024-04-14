@@ -7,6 +7,7 @@ const token = process.env.TELEGRAM_BOT_TOKEN;
 const channelId = process.env.TELEGRAM_CHANNEL_ID;
 const username = process.env.TELEGRAM_USUARIO;
 const password = process.env.TELEGRAM_PASSWORD;
+const intervalo = proces.env.TELEGRAM_INTERVALO;
 const sessionData = new Map();
 const bot = new TelegramBot(token, { polling: true });
 
@@ -131,8 +132,8 @@ function handleStartCommand(msg) {
     reply_markup: {
       keyboard: [
         [{ text: "Modo Automático ON" }, { text: "Modo Automático OFF" }],
-        [{ text: "Enviar Manualmente parámetros" }],
-        [{ text: "Reset parámetros" }],
+        [{ text: "Enviar Manualmente parámetros" }, { text: "Reset parámetros" }],
+       
       ],
       resize_keyboard: true,
       one_time_keyboard: true,
@@ -252,7 +253,7 @@ function handleMessage(msg) {
       automaticMode = true;
       sendMessage(
         chatId,
-        "Modo Automático está activo. Comenzando a hacer peticiones automáticas cada minuto."
+        `Modo Automático está activo. Comenzando a hacer peticiones automáticas cada ${intervalo} minuto.`
       );
       setInterval(async () => {
         const data = sessionData.get(chatId);
@@ -264,7 +265,7 @@ function handleMessage(msg) {
             getAndProcessOffersAutomatic(data, commands, chatId, channelId);
           }
         }
-      }, 1 * 60 * 1000);
+      }, intervalo * 60 * 1000);
     } else {
       sendMessage(
         chatId,
