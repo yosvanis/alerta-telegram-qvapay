@@ -201,7 +201,7 @@ function handleMessage(msg) {
   const chatId = msg.chat.id;
   const text = msg.text;
 
-  if (text === "Reset parámetros") {
+  if (text === "Reset parámetros" || text === "/reset_params") {
     automaticModeParams[chatId] = {};
     automaticMode = false;
     sendMessage(
@@ -266,7 +266,7 @@ function handleMessage(msg) {
     }
   }
 
-  if (text === "Modo Automático ON") {
+  if (text === "Modo Automático ON" || text === "/automatic") {
     if (automaticModeParams[chatId] && !automaticMode) {
       automaticMode = true;
       sendMessage(
@@ -292,14 +292,14 @@ function handleMessage(msg) {
     }
   }
 
-  if (text === "Modo Automático OFF") {
+  if (text === "Modo Automático OFF" || text === "/automatic_off") {
     automaticMode = false;
     sendMessage(
       chatId,
       "Modo Automático OFF. Las peticiones automáticas han sido detenidas."
     );
   }
-  if (text === "Enviar Manualmente parámetros") {
+  if (text === "Enviar Manualmente parámetros" || text === "/send_params") {
     const data = sessionData.get(chatId);
     if (!automaticMode && automaticModeParams[chatId]) {
       for (const command in automaticModeParams[chatId]) {
