@@ -151,8 +151,16 @@ function handleStartCommand(msg) {
   };
   sendMessage(
     chatId,
-    "¡Hola! Soy el bot de Telegram <<< Alerta Precio Qvapay >>>.\nPara autenticarte en la plataforma Qvapay, ejecutar el siguiente comando:\n /login\nPara cerrar sesión: /logout\n\n Comandos para ver Ofertas:\n /Ofertas_sell_CUP min max ratio orden\n /Ofertas_buy_CUP min max ratio orden\n /Ofertas_sell_MLC min max ratio orden\n /Ofertas_buy_MLC min max ratio orden\n\nEjemplos:\n /Ofertas_sell_CUP 1 100 360 ratio\n/Ofertas_buy_MLC 1 100 1.24 fecha",
+    "¡Hola! Soy el bot de Telegram <<< Alerta Precio Qvapay >>>.\nPara autenticarte en la plataforma Qvapay, ejecutar el siguiente comando:\n /login\nPara cerrar sesión:/n/logout\n\n Comandos para ver Ofertas:\n /Ofertas_sell_CUP min max ratio orden\n /Ofertas_buy_CUP min max ratio orden\n /Ofertas_sell_MLC min max ratio orden\n /Ofertas_buy_MLC min max ratio orden\n\nEjemplos:\n /Ofertas_sell_CUP 1 100 360 ratio\n/Ofertas_buy_MLC 1 100 1.24 fecha",
     opts
+  );
+}
+function handleAliveCommand(msg) {
+  const chatId = msg.chat.id;
+ 
+  sendMessage(
+    chatId,
+    "El servidor is Alive!!!"
   );
 }
 
@@ -310,6 +318,7 @@ function handleMessage(msg) {
 }
 
 bot.onText(/\/start/, handleStartCommand);
+bot.onText(/\/alive/, handleAliveCommand);
 bot.onText(/\/login/, handleLoginCommand);
 bot.onText(/\/logout/, handleLogoutCommand);
 bot.on("message", handleMessage);
