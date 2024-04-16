@@ -41,16 +41,7 @@ async function sendArrayToTelegram(chatId, array, ordenadoPor) {
     }
 
     message += `\n--- Oferta ${tipo} # ${index + 1} ---\n`;
-    message += `Fecha: ${new Date(offer.ultimaFecha).toLocaleDateString(
-      "es-ES",
-      {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      }
-    )}, `;
+    message += `Fecha: ${formatearFecha(offer.ultimaFecha)}, `;
     message +=
       offer.type === "buy"
         ? `Recibes: ${parseFloat(offer.receive).toFixed(2)} ${
@@ -132,8 +123,12 @@ async function getAndProcessOffersAutomatic(data, commands, chatId, channelId) {
     }
   } catch (error) {
     console.error("Error al obtener las ofertas:", error);
-    botFunciones.sendMessage(chatId, "Hubo un error al obtener las ofertas.");
+    sendMessage(chatId, "Hubo un error al obtener las ofertas. Pruebe autenticarse nuevamente en QvaPay");
   }
+}
+function formatearFecha(fechaISO) {
+  const opciones = { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+  return new Date(fechaISO).toLocaleString('es-ES', opciones).replace(/(\d{2})\/(\d{2})\/(\d{2}),/, '$1/$2/$3 ');
 }
 
 function handleStartCommand(msg) {
