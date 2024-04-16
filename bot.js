@@ -131,18 +131,16 @@ async function getAndProcessOffersAutomatic(data, commands, chatId, channelId) {
   }
 }
 function formatearFecha(fechaISO) {
-  const opciones = {
-    year: "2-digit",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  };
-  return new Date(fechaISO)
-    .toLocaleString("es-ES", opciones)
-    .replace(/(\d{2})\/(\d{2})\/(\d{2}),/, "$1/$2/$3 ");
+  const fecha = new Date(fechaISO);
+  const dia = ("0" + fecha.getDate()).slice(-2);
+  const mes = ("0" + (fecha.getMonth() + 1)).slice(-2);
+  const año = fecha.getFullYear();
+  const horas = ("0" + fecha.getHours()).slice(-2);
+  const minutos = ("0" + fecha.getMinutes()).slice(-2);
+  const segundos = ("0" + fecha.getSeconds()).slice(-2);
+  return `${dia}/${mes}/${año} ${horas}:${minutos}:${segundos}`;
 }
+
 
 function handleStartCommand(msg) {
   const chatId = msg.chat.id;
