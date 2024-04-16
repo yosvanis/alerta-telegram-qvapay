@@ -103,7 +103,8 @@ async function getAndProcessOffersAutomatic(data, commands, chatId, channelId) {
       if (orden === "fecha") {
         filteredOffers = filteredOffers.sort(
           (a, b) =>
-            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+            new Date(b.updated_at) - new Date(a.updated_at)
+          
         );
         mensaje = "Ofertas ordenadas por fechas (más reciente primero)";
       } else {
@@ -323,6 +324,8 @@ function handleMessage(msg) {
 
   if (text === "Modo Automático OFF" || text === "/automatic_off") {
     automaticMode = false;
+    clearInterval(intervals.get(chatId));
+      intervals.delete(chatId);
     sendMessage(
       chatId,
       "Modo Automático OFF. Las peticiones automáticas han sido detenidas."
