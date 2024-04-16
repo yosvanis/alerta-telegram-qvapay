@@ -7,7 +7,7 @@ const token = process.env.TELEGRAM_BOT_TOKEN;
 const channelId = process.env.TELEGRAM_CHANNEL_ID;
 const username = process.env.TELEGRAM_USUARIO;
 const password = process.env.TELEGRAM_PASSWORD;
-const intervalo = process.env.TELEGRAM_INTERVALO;
+const intervalo = parseInt(process.env.TELEGRAM_INTERVALO) || 5;
 const sessionData = new Map();
 const bot = new TelegramBot(token, { polling: true });
 
@@ -23,6 +23,7 @@ app.listen(port, () => {
 
 let automaticMode = false;
 let automaticModeParams = {};
+let intervals = new Map();
 
 function sendMessage(chatId, text) {
   bot.sendMessage(chatId, text);
@@ -123,12 +124,24 @@ async function getAndProcessOffersAutomatic(data, commands, chatId, channelId) {
     }
   } catch (error) {
     console.error("Error al obtener las ofertas:", error);
-    sendMessage(chatId, "Hubo un error al obtener las ofertas. Pruebe autenticarse nuevamente en QvaPay");
+    sendMessage(
+      chatId,
+      "Hubo un error al obtener las ofertas. Pruebe autenticarse nuevamente en QvaPay"
+    );
   }
 }
 function formatearFecha(fechaISO) {
-  const opciones = { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-  return new Date(fechaISO).toLocaleString('es-ES', opciones).replace(/(\d{2})\/(\d{2})\/(\d{2}),/, '$1/$2/$3 ');
+  const opciones = {
+    year: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  };
+  return new Date(fechaISO)
+    .toLocaleString("es-ES", opciones)
+    .replace(/(\d{2})\/(\d{2})\/(\d{2}),/, "$1/$2/$3 ");
 }
 
 function handleStartCommand(msg) {
@@ -137,8 +150,10 @@ function handleStartCommand(msg) {
     reply_markup: {
       keyboard: [
         [{ text: "Modo Automático ON" }, { text: "Modo Automático OFF" }],
-        [{ text: "Enviar Manualmente parámetros" }, { text: "Reset parámetros" }],
-       
+        [
+          { text: "Enviar Manualmente parámetros" },
+          { text: "Reset parámetros" },
+        ],
       ],
       resize_keyboard: true,
       one_time_keyboard: true,
@@ -152,23 +167,24 @@ function handleStartCommand(msg) {
 }
 function handleAliveCommand(msg) {
   const chatId = msg.chat.id;
- 
-  sendMessage(
-    chatId,
-    "El servidor is Alive!!!"
-  );
+
+  sendMessage(chatId, "El servidor está activo!!!");
 }
 
 async function handleLoginCommand(msg) {
   const chatId = msg.chat.id;
   try {
-    const data = await authService.login(username, password);
-    console.log("Login exitoso:", data);
-    sessionData.set(chatId, data);
-    sendMessage(
-      chatId,
-      `Login exitoso.\nSaldo en QvaPay: ${data.me.balance}\n\n Definir los parámetros iniciales para las 4 consultas, Comandos:\n /Ofertas_sell_CUP min max ratio orden\n /Ofertas_buy_CUP min max ratio orden\n /Ofertas_sell_MLC min max ratio orden\n /Ofertas_buy_MLC min max ratio orden\n`
-    );
+    if (!sessionData.has(chatId)) {
+      const data = await authService.login(username, password);
+      console.log("Login exitoso:", data);
+      sessionData.set(chatId, data);
+      sendMessage(
+        chatId,
+        `Iniciado sesión correctamente.\nSaldo en QvaPay: ${data.me.balance}\n\n Definir los parámetros iniciales para las 4 consultas, Comandos:\n /Ofertas_sell_CUP min max ratio orden\n /Ofertas_buy_CUP min max ratio orden\n /Ofertas_sell_MLC min max ratio orden\n /Ofertas_buy_MLC min max ratio orden\n`
+      );
+    } else {
+      sendMessage(chatId, "Ya tienes una sesión iniciada.");
+    }
   } catch (error) {
     console.error(error);
     sendMessage(chatId, "Hubo un error al establecer usuario y contraseña.");
@@ -177,15 +193,16 @@ async function handleLoginCommand(msg) {
 
 async function handleLogoutCommand(msg) {
   const chatId = msg.chat.id;
-  const datosUsuario = sessionData.get(chatId);
+  // const datosUsuario = sessionData.get(chatId);
   try {
-    const data = await authService.logout(datosUsuario.accessToken);
-    console.log("Sesión cerrada exitosamente", data);
-    //sessionData.set(chatId, data);
-    sendMessage(
-      chatId,
-      "Sesión cerrada exitosamente"
-    );
+    if (sessionData.has(chatId)) {
+      sessionData.delete(chatId);
+      sendMessage(chatId, "Sesión cerrada correctamente.");
+      clearInterval(intervals.get(chatId));
+      intervals.delete(chatId);
+    } else {
+      sendMessage(chatId, "No tienes ninguna sesión iniciada.");
+    }
   } catch (error) {
     console.error(error);
     sendMessage(chatId, "Hubo un error al cerrar sesión");
@@ -264,21 +281,40 @@ function handleMessage(msg) {
   if (text === "Modo Automático ON" || text === "/automatic") {
     if (automaticModeParams[chatId] && !automaticMode) {
       automaticMode = true;
-      sendMessage(
-        chatId,
-        `Modo Automático está activo. Comenzando a hacer peticiones automáticas cada ${intervalo} minuto.`
-      );
-      setInterval(async () => {
-        const data = sessionData.get(chatId);
-        if (automaticMode) {
-          for (const command in automaticModeParams[chatId]) {
-            const params = automaticModeParams[chatId][command];
-            const commands = { [command]: params };
-            console.log(commands);
-            getAndProcessOffersAutomatic(data, commands, chatId, channelId);
-          }
+
+      if (sessionData.has(chatId)) {
+        if (intervals.has(chatId)) {
+          sendMessage(chatId, "Ya hay un proceso automático en ejecución.");
+        } else {
+          intervals.set(
+            chatId,
+            setInterval(() => {
+              for (const command in automaticModeParams[chatId]) {
+                const params = automaticModeParams[chatId][command];
+                const commands = { [command]: params };
+                console.log(commands);
+                getAndProcessOffersAutomatic(
+                  sessionData.get(chatId),
+                  commands,
+                  chatId,
+                  channelId
+                );
+              }
+            }, intervalo * 60000)
+          );
+          sendMessage(
+            chatId,
+            "Proceso automático iniciado, recibirás las ofertas cada " +
+              intervalo +
+              " minutos."
+          );
         }
-      }, intervalo * 60 * 1000);
+      } else {
+        sendMessage(
+          chatId,
+          "Necesitas iniciar sesión antes de iniciar el proceso automático."
+        );
+      }
     } else {
       sendMessage(
         chatId,
