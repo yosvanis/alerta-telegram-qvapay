@@ -164,7 +164,13 @@ function handleStartCommand(msg) {
 function handleAliveCommand(msg) {
   const chatId = msg.chat.id;
 
-  sendMessage(chatId, "El servidor está activo!!!");
+ 
+  if (sessionData.has(chatId)) {
+     sendMessage(chatId, "El servidor está activo y la sesión QvaPay está activa!!!");
+  }
+  else{
+    sendMessage(chatId, "Sesión QvaPay no activa!!!");
+  }
 }
 
 async function handleLoginCommand(msg) {
