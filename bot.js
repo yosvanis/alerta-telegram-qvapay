@@ -42,7 +42,7 @@ async function sendArrayToTelegram(chatId, array, ordenadoPor) {
     }
 
     message += `\n--- Oferta ${tipo} # ${index + 1} ---\n`;
-    message += `Fecha: ${formatearFecha(offer.ultimaFecha)}, `;
+    message += `Fecha: ${offer.ultimaFecha}, `;
     message +=
       offer.type === "buy"
         ? `Recibes: ${parseFloat(offer.receive).toFixed(2)} ${
@@ -78,6 +78,7 @@ async function getAndProcessOffersAutomatic(data, commands, chatId, channelId) {
         min,
         max
       );
+
 
       let filteredOffers = datos.data
         .filter(
