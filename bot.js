@@ -2,6 +2,7 @@ const TelegramBot = require("node-telegram-bot-api");
 const authService = require("./authService");
 const offerService = require("./offerService");
 require("dotenv").config();
+const moment = require('moment');
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const channelId = process.env.TELEGRAM_CHANNEL_ID;
@@ -42,7 +43,7 @@ async function sendArrayToTelegram(chatId, array, ordenadoPor) {
     }
 
     message += `\n--- Oferta ${tipo} # ${index + 1} ---\n`;
-    message += `Fecha: ${offer.ultimaFecha}, `;
+    message += `Fecha: ${formatearFecha(offer.ultimaFecha)}, `;
     message +=
       offer.type === "buy"
         ? `Recibes: ${parseFloat(offer.receive).toFixed(2)} ${
@@ -78,7 +79,7 @@ async function getAndProcessOffersAutomatic(data, commands, chatId, channelId) {
         min,
         max
       );
-
+      
 
       let filteredOffers = datos.data
         .filter(
@@ -133,14 +134,9 @@ async function getAndProcessOffersAutomatic(data, commands, chatId, channelId) {
   }
 }
 function formatearFecha(fechaISO) {
-  const fecha = new Date(fechaISO);
-  const dia = ("0" + fecha.getDate()).slice(-2);
-  const mes = ("0" + (fecha.getMonth() + 1)).slice(-2);
-  const año = fecha.getFullYear();
-  const horas = ("0" + fecha.getHours()).slice(-2);
-  const minutos = ("0" + fecha.getMinutes()).slice(-2);
-  const segundos = ("0" + fecha.getSeconds()).slice(-2);
-  return `${dia}/${mes}/${año} ${horas}:${minutos}:${segundos}`;
+ // Utiliza moment.js para parsear la fecha ISO y formatearla
+ const fechaFormateada = moment(fechaISO).format('DD/MM/YYYY HH:mm:ss');
+ return fechaFormateada;
 }
 
 
