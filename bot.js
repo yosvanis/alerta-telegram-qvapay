@@ -134,11 +134,11 @@ async function getAndProcessOffersAutomatic(data, commands, chatId, channelId) {
   }
 }
 function formatearFecha(fechaISO) {
- // Utiliza moment.js para parsear la fecha ISO y formatearla
- const fechaFormateada = moment(fechaISO).format('DD/MM/YYYY HH:mm:ss');
- return fechaFormateada;
+  // Utiliza moment.js para parsear la fecha ISO
+  // Ajusta la fecha a la zona horaria UTC-4:00 antes de formatearla
+  const fechaFormateada = moment(fechaISO).utcOffset(-4).format('DD/MM/YYYY HH:mm:ss');
+  return fechaFormateada;
 }
-
 
 function handleStartCommand(msg) {
   const chatId = msg.chat.id;
