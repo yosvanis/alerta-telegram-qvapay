@@ -27,7 +27,29 @@ let automaticModeParams = {};
 let intervals = new Map();
 
 function sendMessage(chatId, text) {
-  bot.sendMessage(chatId, text);
+  bot.sendMessage(chatId, text,);
+}
+function sendMessageCanal(chatId, text) {
+ // Crear el Inline Keyboard
+ const inlineKeyboard = {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "Ver Ofertas P2P en QvaPay", // El texto del botón
+            url: "https://qvapay.com/p2p" // El enlace al que redirigir
+          }
+        ]
+      ]
+    }
+ };
+
+ // Enviar el mensaje con el Inline Keyboard, especificar el modo de parseo como Markdown y deshabilitar la vista previa del enlace
+ bot.sendMessage(chatId, text, {
+    ...inlineKeyboard,
+    
+    disable_web_page_preview: true
+ });
 }
 async function sendArrayToTelegram(chatId, array, ordenadoPor) {
   let message = "";
@@ -37,26 +59,28 @@ async function sendArrayToTelegram(chatId, array, ordenadoPor) {
     if (index == 0) {
       message +=
         offer.type === "buy"
-          ? `En estas ofertas Recibes  ${offer.coin} y Pagas USD,`
-          : `En estas ofertas Recibes USD y Pagas ${offer.coin}\n\n`;
-      message += `\n>>> ${ordenadoPor} <<<\n`;
+          ? `💵 En estas ofertas Recibes  ${offer.coin} y Pagas USD,`
+          : `💵 En estas ofertas Recibes USD y Pagas ${offer.coin}\n\n`;
+      message += `\n⚡️ ${ordenadoPor} \n`;
     }
 
-    message += `\n--- Oferta ${tipo} # ${index + 1} ---\n`;
-    message += `Fecha: ${formatearFecha(offer.ultimaFecha)}, `;
+    message += `\n🚨 Oferta ${tipo} # ${index + 1} \n`;
+    message += `⏱ Fecha: ${formatearFecha(offer.ultimaFecha)}, `;
     message +=
       offer.type === "buy"
-        ? `Recibes: ${parseFloat(offer.receive).toFixed(2)} ${
+        ? ` 👉🏻Recibes: ${parseFloat(offer.receive).toFixed(2)} ${
             offer.coin
-          }, Pagas: ${offer.amount} USD,`
-        : `Recibes: ${offer.amount} USD , Pagas: ${parseFloat(
+          }, 💳Pagas: ${offer.amount} USD,`
+        : ` 👉🏻Recibes: ${offer.amount} USD , 💳Pagas: ${parseFloat(
             offer.receive
           ).toFixed(2)} ${offer.coin} ,`;
-    message += ` Ratio: ${offer.Ratio}\n`;
+    message += ` 💹Ratio: ${offer.Ratio}\n`;
+    message +=  `👀 Ver Oferta: ↴\n 🌐${offer.url}\n`; // Aquí se agrega el enlace
   });
+  message += `\n🏷️Fin de ofertas`
 
   try {
-    sendMessage(chatId, message);
+    sendMessageCanal(chatId, message);
     console.log("Mensaje enviado exitosamente.");
   } catch (error) {
     console.error("Error al enviar el mensaje:", error);
@@ -99,6 +123,7 @@ async function getAndProcessOffersAutomatic(data, commands, chatId, channelId) {
           status: offer.status,
           message: offer.message,
           ultimaFecha: offer.updated_at,
+          url:"https://qvapay.com/p2p/"+offer.uuid
         }));
 
       let mensaje;
