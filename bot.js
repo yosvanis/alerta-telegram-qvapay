@@ -65,7 +65,7 @@ async function sendArrayToTelegram(chatId, array, ordenadoPor) {
     }
 
     // message += `\n🚨 Oferta ${tipo} # ${index + 1} \n`;
-    message += `\n🚨 Oferta ${tipo} de ${offer.name} \n`;
+    message += `\n🚨 Oferta ${tipo} de ${offer.name} ⭐️\n`;
     message += `⏱ Fecha: ${formatearFecha(offer.ultimaFecha)}, `;
     message +=
       offer.type === "buy"
