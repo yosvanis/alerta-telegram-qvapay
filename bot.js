@@ -36,7 +36,7 @@ function sendMessageCanal(chatId, text) {
       inline_keyboard: [
         [
           {
-            text: "Ver Ofertas P2P en QvaPay", // El texto del botón
+            text: "Ver todas las ofertas P2P en QvaPay", // El texto del botón
             url: "https://qvapay.com/p2p" // El enlace al que redirigir
           }
         ]
@@ -64,7 +64,8 @@ async function sendArrayToTelegram(chatId, array, ordenadoPor) {
       message += `\n⚡️ ${ordenadoPor} \n`;
     }
 
-    message += `\n🚨 Oferta ${tipo} # ${index + 1} \n`;
+    // message += `\n🚨 Oferta ${tipo} # ${index + 1} \n`;
+    message += `\n🚨 Oferta ${tipo} de ${offer.name} \n`;
     message += `⏱ Fecha: ${formatearFecha(offer.ultimaFecha)}, `;
     message +=
       offer.type === "buy"
